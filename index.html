@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Will You Be My Valentine 💖</title>
+
+<style>
+body {
+    height: 100vh;
+    margin: 0;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: linear-gradient(135deg, #ff9a9e, #fad0c4);
+    font-family: Arial, sans-serif;
+}
+
+/* Floating hearts */
+.heart {
+    position: fixed;
+    pointer-events: none;
+    animation: floatUp linear infinite;
+}
+@keyframes floatUp {
+    from { transform: translateY(100vh); opacity: 1; }
+    to { transform: translateY(-10vh); opacity: 0; }
+}
+
+.container {
+    background: white;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    text-align: center;
+    z-index: 2;
+}
+
+h1 {
+    color: #ff4d6d;
+    margin-bottom: 30px;
+}
+
+.buttons {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    position: relative;
+}
+
+button {
+    padding: 12px 32px;
+    font-size: 18px;
+    border: none;
+    border-radius: 25px;
+}
+
+#yesBtn {
+    background: #ff4d6d;
+    color: white;
+    cursor: pointer;
+}
+
+/* Placeholder keeps layout intact */
+#noPlaceholder {
+    visibility: hidden;
+}
+
+/* Actual moving button */
+#noBtn {
+    background: #ddd;
+    color: black;
+    position: fixed;
+    pointer-events: none;
+    z-index: 10;
+}
+
+.message {
+    margin-top: 25px;
+    font-size: 22px;
+    color: #ff4d6d;
+    display: none;
+}
+</style>
+</head>
+<body>
+
+<div id="hearts"></div>
+
+<div class="container">
+    <h1>Will you be my Valentine? 💖</h1>
+    <div class="buttons">
+        <button id="yesBtn">Yes 😍</button>
+        <!-- Placeholder -->
+        <button id="noPlaceholder">No 💔</button>
+    </div>
+    <div class="message" id="message">Yayyyy!! 💕 I knew it 😘</div>
+</div>
+
+<!-- Real moving No button -->
+<button id="noBtn">No 💔</button>
+
+<script>
+const noBtn = document.getElementById("noBtn");
+const noPlaceholder = document.getElementById("noPlaceholder");
+const yesBtn = document.getElementById("yesBtn");
+const message = document.getElementById("message");
+
+let mouseX = 0, mouseY = 0;
+let noX = 0, noY = 0;
+
+document.addEventListener("mousemove", e => {
+    mouseX = e.clientX;
+    mouseY = e.clientY;
+});
+
+/* Lock initial position using placeholder */
+window.addEventListener("load", () => {
+    const r = noPlaceholder.getBoundingClientRect();
+    noX = r.left;
+    noY = r.top;
+    noBtn.style.left = noX + "px";
+    noBtn.style.top = noY + "px";
+});
+
+function animate() {
+    const rect = noBtn.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+
+    const dx = cx - mouseX;
+    const dy = cy - mouseY;
+    const dist = Math.hypot(dx, dy);
+
+    const FORCE_RADIUS = 170;
+
+    if (dist < FORCE_RADIUS) {
+        const angle = Math.atan2(dy, dx);
+        const speed = (FORCE_RADIUS - dist) / 4;
+
+        noX += Math.cos(angle) * speed;
+        noY += Math.sin(angle) * speed;
+
+        // keep visible
+        noX = Math.max(10, Math.min(window.innerWidth - rect.width - 10, noX));
+        noY = Math.max(10, Math.min(window.innerHeight - rect.height - 10, noY));
+
+        noBtn.style.left = noX + "px";
+        noBtn.style.top = noY + "px";
+    }
+
+    requestAnimationFrame(animate);
+}
+
+animate();
+
+yesBtn.addEventListener("click", () => {
+    message.style.display = "block";
+});
+
+/* Hearts */
+const hearts = document.getElementById("hearts");
+setInterval(() => {
+    const h = document.createElement("div");
+    h.className = "heart";
+    h.textContent = "💖";
+    h.style.left = Math.random() * 100 + "vw";
+    h.style.fontSize = 16 + Math.random() * 24 + "px";
+    h.style.animationDuration = 3 + Math.random() * 4 + "s";
+    hearts.appendChild(h);
+    setTimeout(() => h.remove(), 7000);
+}, 300);
+</script>
+
+</body>
+</html>
